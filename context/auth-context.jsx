@@ -6,13 +6,16 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
-    // Check in initail load
+    // Check initial load
     const storedUser = localStorage.getItem("currentUser");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
       setIsAuthenticated(true);
+      setWishlist(parsedUser.wishlist || []);
     }
   }, []);
 
@@ -25,6 +28,7 @@ export const AuthProvider = ({ children }) => {
     if (foundUser) {
       setUser(foundUser);
       setIsAuthenticated(true);
+      setWishlist(foundUser.wishlist || []);
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
       return { success: true, user: foundUser };
     } else {
@@ -35,11 +39,44 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
+    setWishlist([]);
     localStorage.removeItem("currentUser");
   };
 
+  const addToWishlist = (recipe) => {
+    const updatedWishlist = [...wishlist, recipe];
+    setWishlist(updatedWishlist);
+
+    if (user) {
+      const updatedUser = { ...user, wishlist: updatedWishlist };
+      setUser(updatedUser);
+      localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+    }
+  };
+
+  const removeFromWishlist = (idMeal) => {
+    const updatedWishlist = wishlist.filter((item) => item.idMeal !== idMeal);
+    setWishlist(updatedWishlist);
+
+    if (user) {
+      const updatedUser = { ...user, wishlist: updatedWishlist };
+      setUser(updatedUser);
+      localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        login,
+        logout,
+        wishlist,
+        addToWishlist,
+        removeFromWishlist,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

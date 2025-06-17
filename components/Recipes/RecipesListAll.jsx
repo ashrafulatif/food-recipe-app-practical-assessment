@@ -4,27 +4,23 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import RecipeCard from "./RecipeCard";
 import Modal from "../Modal";
-import SingleRecipe from "./SingleRecipe";
 
 const RecipesListAll = () => {
   const [openDetails, setOpenDetails] = useState(false);
   const [recipeId, setRecipeId] = useState("");
-  const [recipes, setRecipes] = useState([]);
   const [searchInput, setSearchInput] = useState("");
-  const [searchQuery, setSearchQuery] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["allRecipes"],
-    queryFn: HttpKit.getAllRecipes,
+    queryKey: ["allRecipes", searchQuery],
+    queryFn: () =>
+      searchQuery
+        ? HttpKit.searchRecipesByName(searchQuery)
+        : HttpKit.getAllRecipes(),
   });
 
-  useEffect(() => {
-    if (data) {
-      setRecipes(data);
-    }
-  }, [data]);
-
-  const handleSearch = () => {
+  const handleSearch = (e) => {
+    e.preventDefault();
     setSearchQuery(searchInput);
   };
 
@@ -33,8 +29,18 @@ const RecipesListAll = () => {
     setRecipeId(id);
   };
 
-  if (isLoading) return <div>Loading recipes...</div>;
-  if (error) return <div>Error loading recipes: {error.message}</div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading recipes...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Error loading recipes: {error.message}
+      </div>
+    );
 
   return (
     <div className="bg-gray-50 py-24">
@@ -44,17 +50,17 @@ const RecipesListAll = () => {
         </h1>
         {/* Search form */}
         <div className="flex justify-center mb-6">
-          <form action="" className="w-full max-w-lg">
+          <form onSubmit={handleSearch} className="w-full max-w-lg">
             <div className="relative flex p-1 rounded-full bg-white border border-yellow-200 shadow-md md:p-2">
               <input
                 placeholder="Search recipes..."
                 className="w-full p-4 rounded-full outline-none bg-transparent text-gray-700"
                 type="text"
+                value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
               <button
-                onClick={() => handleSearch()}
-                type="button"
+                type="submit"
                 title="Search recipes"
                 className="ml-auto py-3 px-6 rounded-full text-center transition bg-gradient-to-b from-yellow-200 to-yellow-300 hover:to-red-300 active:from-yellow-400 focus:from-red-400 md:px-12"
               >
@@ -76,9 +82,9 @@ const RecipesListAll = () => {
         <div className="relative py-10">
           <div className="container relative m-auto px-6 text-gray-500 md:px-12">
             <div className="grid gap-6 md:mx-auto md:w-8/12 lg:w-full lg:grid-cols-3">
-              {recipes?.map((recipe) => (
+              {data?.map((recipe) => (
                 <RecipeCard
-                  key={recipe?.id}
+                  key={recipe?.idMeal}
                   recipe={recipe}
                   handleDetailsOpen={handleDetailsOpen}
                 />
@@ -88,10 +94,12 @@ const RecipesListAll = () => {
         </div>
       </div>
 
-      {/* Modal */}
-      <Modal isOpen={openDetails} setIsOpen={setOpenDetails}>
-        <SingleRecipe id={recipeId} setIsOpen={setOpenDetails} />
-      </Modal>
+      {/* Pass recipeId */}
+      <Modal
+        isOpen={openDetails}
+        setIsOpen={setOpenDetails}
+        recipeId={recipeId}
+      />
     </div>
   );
 };

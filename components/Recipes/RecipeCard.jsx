@@ -1,20 +1,33 @@
 import Image from "next/image";
-import React, { useState } from "react";
-import { useCart } from "@/context/cart-context";
+import React from "react";
+import { useAuth } from "@/context/auth-context";
 import IconButton from "../IconButton";
+import toast from "react-hot-toast";
 
 const RecipeCard = ({ recipe, handleDetailsOpen }) => {
-  const { addToCart } = useCart();
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { isAuthenticated, wishlist, addToWishlist, removeFromWishlist } =
+    useAuth();
+  const isWishlisted = wishlist.some((item) => item.idMeal === recipe.idMeal);
 
   const toggleWishlist = (e) => {
     e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
+
+    if (!isAuthenticated) {
+      //toast
+      toast.error("Please login to add items in wishlist!.");
+      return;
+    }
+
+    if (isWishlisted) {
+      removeFromWishlist(recipe.idMeal);
+    } else {
+      addToWishlist(recipe);
+    }
   };
 
   return (
     <div className="group relative border border-gray-100 rounded-3xl bg-white px-4 py-4 text-center shadow hover:cursor-pointer hover:shadow-xl transition duration-200 shadow-gray-600/10 flex flex-col h-full">
-      {/* Wishlist*/}
+      {/* Wishlist */}
       <div className="absolute top-6 right-6 z-10">
         <IconButton
           icon="Heart"
