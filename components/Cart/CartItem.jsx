@@ -16,6 +16,7 @@ const CartItem = ({ item }) => {
           alt={item.strMeal}
           fill
           className="object-cover"
+          priority
         />
       </div>
       <div className="p-6 flex-1 flex flex-col">
