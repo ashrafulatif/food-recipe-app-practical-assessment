@@ -5,6 +5,9 @@ import React, { useState } from "react";
 import RecipeCard from "./RecipeCard";
 import Modal from "../Modal";
 import Pagination from "../Pagination";
+import RecipeSubmissionForm from "../RecipeSubmission/RecipeSubmissionForm";
+import IconButton from "../IconButton";
+import Link from "next/link";
 
 const RecipesListAll = () => {
   const [openDetails, setOpenDetails] = useState(false);
@@ -93,6 +96,17 @@ const RecipesListAll = () => {
             </div>
           </form>
         </div>
+        {/* Recipe add */}
+        <div className="flex justify-end mr-12">
+          <Link href="/recipesubmission">
+            <IconButton
+              icon="Plus"
+              label="Add Recipe"
+              className="py-4 px-4 bg-yellow-300 hover:bg-yellow-100 active:bg-yellow-400 focus:bg-yellow-300 text-yellow-900 font-semibold text-sm"
+            />
+          </Link>
+        </div>
+
         <div className="relative py-10">
           <div className="container relative m-auto px-6 text-gray-500 md:px-12">
             <div className="grid gap-6 md:mx-auto md:w-8/12 lg:w-full lg:grid-cols-3">

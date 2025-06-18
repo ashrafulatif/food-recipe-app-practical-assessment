@@ -6,6 +6,7 @@ import TanstackProvider from "@/providers/TanstackProvider";
 import { AuthProvider } from "@/context/auth-context";
 import { CartProvider } from "@/context/cart-context";
 import { Toaster } from "react-hot-toast";
+import Footer from "@/components/Footer/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -35,6 +36,7 @@ export default function RootLayout({ children }) {
             <TanstackProvider>
               <Navbar />
               {children}
+              <Footer />
               <Toaster />
             </TanstackProvider>
           </CartProvider>
