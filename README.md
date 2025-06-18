@@ -45,7 +45,13 @@ This project is a Food Recipe App. It lets you browse recipes, add them to your 
    - Recipes are shown in pages, so you don't have to scroll forever. 6 recipe will show per page.
 
 8. **Footer:**
+
    - Added basic Footer.
+
+9. **Form Handling & Validation:**
+
+- The form is built using **React Hook Form** for easy state management.
+- **Zod** is used for validating the form fields, making sure your input is correct.
 
 ### Non-Technical Features
 
