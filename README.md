@@ -41,7 +41,11 @@ This project is a Food Recipe App. It lets you browse recipes, add them to your 
    - Search for recipes from the homepage or the all recipes page.
 
 7. **Pagination:**
-   - Recipes are shown in pages, so you don't have to scroll forever.
+
+   - Recipes are shown in pages, so you don't have to scroll forever. 6 recipe will show per page.
+
+8. **Footer:**
+   - Added basic Footer.
 
 ### Non-Technical Features
 
