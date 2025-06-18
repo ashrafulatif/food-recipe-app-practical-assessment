@@ -1,15 +1,20 @@
 "use client";
 import HttpKit from "@/common/helpers/HttpKit";
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import RecipeCard from "./RecipeCard";
 import Modal from "../Modal";
+import Pagination from "../Pagination";
 
 const RecipesListAll = () => {
   const [openDetails, setOpenDetails] = useState(false);
   const [recipeId, setRecipeId] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const recipesPerPage = 6;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["allRecipes", searchQuery],
@@ -22,12 +27,21 @@ const RecipesListAll = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setSearchQuery(searchInput);
+    setCurrentPage(1); // Reset
   };
 
   const handleDetailsOpen = (id) => {
     setOpenDetails(true);
     setRecipeId(id);
   };
+  // Calculate pagination
+  const totalPages = data ? Math.ceil(data.length / recipesPerPage) : 0;
+  const paginatedRecipes = data
+    ? data.slice(
+        (currentPage - 1) * recipesPerPage,
+        currentPage * recipesPerPage
+      )
+    : [];
 
   if (isLoading)
     return (
@@ -73,7 +87,7 @@ const RecipesListAll = () => {
                   fill="currentColor"
                   viewBox="0 0 16 16"
                 >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 5.5 0 1 1-11 0 5.5 5.5 5.5 0 0 1 11 0z" />
                 </svg>
               </button>
             </div>
@@ -82,7 +96,7 @@ const RecipesListAll = () => {
         <div className="relative py-10">
           <div className="container relative m-auto px-6 text-gray-500 md:px-12">
             <div className="grid gap-6 md:mx-auto md:w-8/12 lg:w-full lg:grid-cols-3">
-              {data?.map((recipe) => (
+              {paginatedRecipes.map((recipe) => (
                 <RecipeCard
                   key={recipe?.idMeal}
                   recipe={recipe}
@@ -99,6 +113,12 @@ const RecipesListAll = () => {
         isOpen={openDetails}
         setIsOpen={setOpenDetails}
         recipeId={recipeId}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
       />
     </div>
   );

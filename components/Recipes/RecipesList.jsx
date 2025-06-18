@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import RecipeCard from "./RecipeCard";
 import Modal from "../Modal";
+import Pagination from "../Pagination";
 
 const RecipesList = () => {
   const [openDetails, setOpenDetails] = useState(false);
@@ -11,6 +12,16 @@ const RecipesList = () => {
   const [recipes, setRecipes] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  //pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const recipesPerPage = 6; // Number of recipes per page
+  const totalPages = Math.ceil(recipes.length / recipesPerPage);
+
+  const paginatedRecipes = recipes.slice(
+    (currentPage - 1) * recipesPerPage,
+    currentPage * recipesPerPage
+  );
 
   // Fetch recipes based on query or top
   const { data, isLoading, error } = useQuery({
@@ -83,13 +94,13 @@ const RecipesList = () => {
 
         {/* Recipes grid */}
         <div className="py-8">
-          {recipes.length === 0 ? (
+          {paginatedRecipes.length === 0 ? (
             <div className="text-center py-10">
               <p className="text-gray-500">No recipes found</p>
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {recipes.map((recipe) => (
+              {paginatedRecipes.map((recipe) => (
                 <RecipeCard
                   key={recipe.idMeal}
                   recipe={recipe}
@@ -106,6 +117,12 @@ const RecipesList = () => {
         isOpen={openDetails}
         setIsOpen={setOpenDetails}
         recipeId={recipeId}
+      />
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
       />
     </div>
   );

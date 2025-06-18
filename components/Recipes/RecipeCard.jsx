@@ -3,10 +3,12 @@ import React from "react";
 import { useAuth } from "@/context/auth-context";
 import IconButton from "../IconButton";
 import toast from "react-hot-toast";
+import { useCart } from "@/context/cart-context";
 
 const RecipeCard = ({ recipe, handleDetailsOpen }) => {
   const { isAuthenticated, wishlist, addToWishlist, removeFromWishlist } =
     useAuth();
+  const { addToCart } = useCart();
   const isWishlisted = wishlist.some((item) => item.idMeal === recipe.idMeal);
 
   const toggleWishlist = (e) => {
